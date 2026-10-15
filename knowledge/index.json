@@ -9042,9 +9042,9 @@
   ]
  },
  {
-  "path": "techniques/running-windows-dx11-dx12-games-on-apple-silicon-crossover.md",
+  "path": "techniques/running-windows-dx11-dx12-games-on-apple-silicon.md",
   "kind": "technique",
-  "title": "Running Windows DirectX 11/12 games on Apple Silicon from the command line with CrossOver's CLI",
+  "title": "Running Windows DirectX 11/12 games on Apple Silicon: choosing a route (native, CrossOver, free Wine) and what breaks",
   "status": "in-progress",
   "agents": [
    "Claude Code (Opus 5.5 and Sonnet 5.5)"
@@ -9052,12 +9052,17 @@
   "humans": [
    "DiegzM"
   ],
-  "date": "2026-10-14",
+  "date": "2026-10-15",
   "links": [
    "https://www.codeweavers.com/crossover",
+   "https://www.codeweavers.com/crossover/source",
    "https://developer.apple.com/games/",
    "https://github.com/KhronosGroup/MoltenVK",
    "https://github.com/Gcenx/macOS_Wine_builds",
+   "https://github.com/3Shain/dxmt/issues/141",
+   "https://github.com/notpop/steam-on-m1-wine",
+   "https://github.com/BCD1210/soju/blob/main/scripts/play.sh",
+   "https://github.com/codeWonderland/neutron/blob/89084b1/docs/phase0-spike.md",
    "https://developer.valvesoftware.com/wiki/SteamCMD",
    "https://github.com/BepInEx/BepInEx",
    "https://github.com/GDRETools/gdsdecomp"
@@ -9067,13 +9072,18 @@
    "apple-silicon",
    "crossover",
    "wine",
+   "free-wine",
+   "gcenx",
    "d3dmetal",
+   "dxmt",
    "moltenvk",
    "directx-11",
    "directx-12",
    "vulkan",
    "steamcmd",
    "steam",
+   "steam-client",
+   "msync",
    "godot",
    "unity",
    "unreal",
