@@ -790,6 +790,8 @@ def save_hints(name: str, det: dict) -> list[str]:
 def host_info() -> dict:
     """The machine `um` runs on. `arch` uses the names of an exe's `arch` (x86, x64, arm64) so the two compare directly."""
     import platform
+    # Windows asks WMI for the CPU from Python 3.12 on; before that, an x64 Python emulated on Windows on Arm
+    # reads its own process architecture and reports x64
     machine = platform.machine().lower()
     arch = {"x86_64": "x64", "amd64": "x64", "x86": "x86", "i386": "x86", "i686": "x86",
             "arm64": "arm64", "aarch64": "arm64"}.get(machine, machine)
@@ -813,10 +815,8 @@ def host_info() -> dict:
             version = platform.freedesktop_os_release().get("PRETTY_NAME") or platform.release()
         except OSError:
             version = platform.release()
-    host = dict(os=os_name, os_version=version or "unknown", arch=arch, wsl=is_wsl())
-    if translated:
-        host["translated"] = True
-    return host
+    # the same keys on every host, so `--json` readers never meet a missing field
+    return dict(os=os_name, os_version=version or "unknown", arch=arch, wsl=is_wsl(), translated=translated)
 
 
 def host_line(h: dict) -> str:

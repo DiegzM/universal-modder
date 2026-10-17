@@ -585,7 +585,7 @@ def test_host_info_per_os_and_wsl(monkeypatch):
     _fake_host(monkeypatch, "macos", "arm64")
     monkeypatch.setattr(platform, "mac_ver", lambda: ("26.5.1", ("", "", ""), "arm64"))
     h = scan.host_info()
-    assert h == dict(os="macos", os_version="26.5.1", arch="arm64", wsl=False)
+    assert h == dict(os="macos", os_version="26.5.1", arch="arm64", wsl=False, translated=False)
     assert scan.host_line(h) == "macOS 26.5.1, arm64"
 
     _fake_host(monkeypatch, "windows", "AMD64")
@@ -628,7 +628,7 @@ def test_host_info_sees_through_rosetta(monkeypatch):
     for out, error in [("0\n", None), ("", None), (None, OSError("no sysctl"))]:   # a real Intel Mac, or no answer
         monkeypatch.setattr(scan.subprocess, "run", sysctl(out, error))
         h = scan.host_info()
-        assert h["arch"] == "x64" and "translated" not in h
+        assert h["arch"] == "x64" and h["translated"] is False
 
 
 def test_scan_report_starts_with_the_host(tmp_path):
@@ -637,7 +637,7 @@ def test_scan_report_starts_with_the_host(tmp_path):
     for i in range(6):
         (d / f"f{i}.txt").write_text("x")
     r = scan.scan(str(d))
-    assert set(r["host"]) >= {"os", "os_version", "arch", "wsl"}
+    assert set(r["host"]) == {"os", "os_version", "arch", "wsl", "translated"}   # the same keys on every host
     assert json.loads(json.dumps(r))["host"] == r["host"]           # machine-readable for agents
     lines = scan.format_report(r).splitlines()
     assert lines[1].startswith("  path:") and lines[2].startswith("  host:      ")
