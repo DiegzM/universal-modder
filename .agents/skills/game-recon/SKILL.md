@@ -1,6 +1,6 @@
 ---
 name: game-recon
-description: Figure out how a specific installed game can be modded, before writing any mod code. Covers where it's installed, the engine and version, managed vs native code, anti-cheat, loaders already present, save and config folders, and the community's modding route. Also checks whether the game can run on this machine (the host's OS and CPU against the game's platform) and how to find notes for a cross-platform case. Use when the user asks "can I mod <game>?", "what engine is <game>", "how do people mod <game>", or at the start of any modding task. Produces MODDING_PLAN.md.
+description: Figure out how a specific installed game can be modded, before writing any mod code. Covers where it's installed, the engine and version, managed vs native code, anti-cheat, loaders already present, save and config folders, and the community's modding route. Also whether this machine can run it (a Windows game on macOS or Linux, x64 on ARM). Use when the user asks "can I mod <game>?", "what engine is <game>", "how do people mod <game>", or at the start of any modding task. Produces MODDING_PLAN.md.
 ---
 
 # Game recon
@@ -11,8 +11,6 @@ so every later step can rely on it.
 ## 0. Has another agent been here?
 `um kb search "<game>"` (and the engine name). A field note in the shared knowledge base can hand you the
 working versions, the route, and the gotchas before you touch anything. See the **share-field-notes** skill.
-If the game can't run on this machine as it is (a Windows-only game on a Mac or Linux box, an x86 game on an
-ARM CPU), step 1b says what else to search.
 
 ## 1. Find it and fingerprint it
 ```bash
@@ -35,26 +33,12 @@ The scan can't see everything, so check these by hand:
   don't live in the game folder. Search "<game> anti-cheat".
 - **Online-only or live-service games:** treat them as protected even if nothing was detected.
 
-## 1b. Does it run on this machine?
-Do this when the host and the game's platform differ (a Windows-only game on a Mac or Linux box, an x86 game
-on an ARM CPU), or when the OS build, GPU, driver or layer version could matter even on the same platform.
-Fast path:
-1. **Compare** host and game. `um scan` prints each exe's CPU (`[x64]`, `[x86]`, `[arm64]`); add the OS
-   build, the GPU and the graphics API the exe imports.
-2. **Search the notes** by situation and by the exact error text, before researching (spell the API out:
-   `dx11` misses where `directx 11` hits):
-   ```bash
-   um kb search "windows game on mac"
-   um kb search "directx apple silicon"
-   um kb search "<error text>"
-   ```
-   A matching note: follow its setup and versions, then verify.
-3. **No match?** Probe the layer on something tiny before the real game, and record exact versions on the
-   `Host / compat` line below.
-
-Anti-cheat is a stop sign (`skills/mod-any-game/references/safety.md`). The route ladder, the layers (CPU,
-Windows API, graphics API, launcher), same-OS mismatches (OS build, GPU, driver, layer version, runtimes)
-and the sources are in `skills/game-recon/references/compatibility.md`.
+## 1b. Can this machine run it?
+Skip this when the game is native to the host: a Windows game on Windows or from WSL, a macOS or Linux build
+on its own OS. Otherwise (a Windows-only game on macOS or Linux, an x64 game on an ARM CPU), or when a game
+that should run here won't start, search the notes by situation and exact error text first
+(`um kb search "windows game on mac"`, `um kb search "proton"`, `um kb search "<error text>"`), then follow
+`references/compatibility.md`: host checks, per-game reports, the layers, anti-cheat, probes.
 
 ## 2. Research the living community (always; versions move)
 Search, in order:
@@ -80,8 +64,8 @@ Capture: the loader's name, repo, **current version and install steps**, the gam
 - Install: <path> (<store> <appid>), version <x>
 - Engine: <engine + version>, code: managed .NET / IL2CPP / native, 64-bit
 - Anti-cheat / online: <none | what + verdict>
-- Host / compat: <host OS+CPU> vs <game platform+API>; layer: <native | compat layer | VM>;
-  notes read: <queries>; verified by: <probe, log or screenshot>; unverified: <list>
+- Host / compat (if not native): <host OS, CPU, GPU> vs <game CPU + graphics API>; layer: <name + version>;
+  verified by: <probe, log or screenshot>
 - Saves: <path>   Config: <path>   Logs: <path>
 - Community route: <loader vX.Y (repo)>, install: <steps>, example mod: <link>
 - Chosen route for "<idea>": <route> because <reason>
