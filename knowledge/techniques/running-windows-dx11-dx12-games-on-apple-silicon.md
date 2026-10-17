@@ -47,10 +47,12 @@ Use the least machinery that can run the game, and add a layer only when the evi
 5. **A Steamworks game:** Windows Steam must run in the *same* prefix (Gotcha 7). CrossOver: it signed in with no
    workaround. Free Wine: only with the web-helper wrapper and the audio workaround (How, free Wine route); one
    build confirmed, speed not measured.
-6. **DirectX 12 only:** D3DMetal is the route that ran one (CrossOver: MECCHA CHAMELEON's title screen). Free: only
-   the GPTK 3.0-3 build (Wine 7.7) has D3DMetal; it passed the DirectX 12 probe but cannot run today's Steam
-   client. The free Wine 11 builds reach only feature level 11_0. An outside repo reports Elden Ring (Direct3D 12)
-   on CrossOver's D3DMetal (third-party report, not verified here; see Seen in).
+6. **DirectX 12 only:** D3DMetal is the route that ran one (CrossOver: MECCHA CHAMELEON's title screen). Free: of
+   the builds tried here, only the GPTK 3.0-3 build (Wine 7.7) has D3DMetal; it passed the DirectX 12 probe but
+   cannot run today's Steam client. The free Wine 11 builds reach only feature level 11_0. Sikarugir's
+   CrossOver-based engines can load D3DMetal too (neutron's notes created a D3D12 device on its CX 24.0.7_7 engine);
+   not tried here. An outside repo reports Elden Ring (Direct3D 12) on CrossOver's D3DMetal (third-party report,
+   not verified here; see Seen in).
 7. **DirectX 9/10, OpenGL, 32-bit, launchers other than Steam:** untested here (Scope table; the Underrail note ran
    a 32-bit game in CrossOver).
 
@@ -64,15 +66,18 @@ their DirectX support, cost and licence change often, so check the current state
 | CrossOver 26.3 command-line tools | paid | signs in, UI draws | D3DMetal: D3D11 and D3D12 | PEAK to gameplay, MECCHA CHAMELEON title screen, Godot game to a race |
 | Free: Gcenx Wine Stable 11.0_1 | free | black UI until the web-helper wrapper, then the login UI and the contributor's account loaded (Gotcha 11) | no D3DMetal; DirectX 12 probe reached only feature level 11_0 | Unity game booted; Godot game ran on Vulkan |
 | Free: Gcenx Wine Devel / Staging 11.18 | free | black without the wrapper; wrapper **not tested** | same as Stable | probe at level 11_0; Unity game booted |
-| Free: Game Porting Toolkit 3.0-3 build (Wine 7.7) | free; Apple's licence is non-commercial | does not run (Gotcha 11) | D3DMetal, feature level 12_2 | probe passed; PEAK crashed at input init (Gotcha 2) |
+| Free: Game Porting Toolkit 3.0-3 build (Wine 7.7) | free; D3DMetal's licence rules out commercial ports | does not run (Gotcha 11) | D3DMetal, feature level 12_2 | probe passed; PEAK crashed at input init (Gotcha 2) |
 | Free: Wine 11.18 rebuilt with a patch author's `winemac` and DXMT patches | free; about 30 minutes to build | no login window on this Mac (Gotcha 29) | DXMT (DirectX 10/11 only) | not working here; its author reports it on other chips and macOS versions |
 
 ## What the free route gives up, and why it is harder
 - **No fast sync.** `strings` on the core library finds no `msync`, `esync` or `ntsync` in Gcenx Stable 11.0_1 or
   Devel/Staging 11.18, but msync in CrossOver 26.3 and in the GPTK 3.0-3 build. A likely (unproven) part of why the
   free builds feel slower (Gotcha 26).
-- **No D3DMetal for a modern Wine.** It is Apple's closed source layer with a non-commercial licence; CrossOver
-  ships it, the free route gets it only inside the old Wine 7.7 build, which cannot run Windows Steam.
+- **No D3DMetal on a free Wine 10 or later.** D3DMetal is Apple's closed-source layer, and its licence rules out
+  commercial ports (Gcenx's Sikarugir README). CrossOver ships it with its own Wine 11. Outside CrossOver it needs a
+  CrossOver-based Wine 9 or older: neutron's README says it "doesn't run on Wine 10 or later", and its notes ran it
+  on Sikarugir's CX 24.0.7_7 engine. Here the only such build tried was the GPTK 3.0-3 build's Wine 7.7, which
+  cannot run Windows Steam.
 - **Windows Steam's browser needs a workaround** and then runs on the CPU (Gotcha 11).
 - **Distribution.** Homebrew disabled the WineHQ casks on 2026-09-01 and Gcenx's `wine-crossover` cask no longer
   exists (`brew info` says so); the free builds are release tarballs, run under Rosetta.
