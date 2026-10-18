@@ -857,6 +857,7 @@ def test_publish_check_mod_inside_game(tmp_path, capsys):
     ("OpenAI key", "sk-" + "Gh1jK2lM3nO4pQ5rS6tU7vW8xY9z0" * 2),
     ("GitHub token", "github" + "_pat_" + "11ABCDEFG0123456789abc" + "_" + "aB3dE5fG7hJ9kL1mN3pQ5rS7tU9vW1xY3zA5bC7dE9fG1hJ3kL5mN7pQ9rS1t"),
     ("GitHub token", "gh" + "p_" + "aB3dE5fG7hJ9kL1mN3pQ5rS7tU9vW1xY3z"),
+    ("Sprixen key", "spx_" + "live_" + "Gh1jK2lM3nO4pQ5rS6tU7vW8xY9z0" * 2),
 ])
 def test_secret_patterns_catch_current_key_formats(label, key):
     rx = dict(publish.SECRET_PATTERNS)[label]
