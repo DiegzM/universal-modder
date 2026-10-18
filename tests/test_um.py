@@ -643,6 +643,32 @@ def test_scan_report_starts_with_the_host(tmp_path):
     assert lines[1].startswith("  path:") and lines[2].startswith("  host:      ")
 
 
+def test_scan_warns_when_windows_exes_meet_a_non_windows_host(tmp_path, monkeypatch):
+    def folder(name, exe):
+        d = tmp_path / name
+        d.mkdir()
+        for i in range(6):
+            (d / f"f{i}.txt").write_text("x")
+        (d / "game.exe" if exe else d / "game.x86_64").write_bytes(_pe(managed=False, arch=0x8664) if exe else b"\x7fELF")
+        return d
+
+    def host(os_name, wsl=False):
+        return dict(os=os_name, os_version="1.2", arch="arm64", wsl=wsl, translated=False)
+
+    def warning(h, d):
+        monkeypatch.setattr(scan, "host_info", lambda: h)
+        return next((w for w in scan.scan(str(d))["warnings"] if "not native" in w), None)
+
+    pe, native = folder("Windows build", True), folder("Native build", False)
+    for h in (host("macos"), host("linux")):
+        w = warning(h, pe)
+        assert w and scan.host_line(h) in w and "compatibility.md" in w, h       # one line, naming the host and where to read
+        assert "\n" not in w
+    assert warning(host("windows"), pe) is None
+    assert warning(host("linux", wsl=True), pe) is None                          # WSL counts as Windows
+    assert warning(host("macos"), native) is None                                # no PE exes: no claim
+
+
 def test_ffmpeg_download_is_checksummed(tmp_path, monkeypatch):
     import hashlib, io
     from um import win

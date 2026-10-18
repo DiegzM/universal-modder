@@ -5,7 +5,8 @@
     um scan "C:\\Games\\Foo" --json  # machine-readable, for agents
 
 The report starts with `host:`, the machine `um` runs on: OS and version, CPU (named like the exes' `[x64]`,
-`[x86]`, `[arm64]`) and WSL. Compare them to know whether the game is native here.
+`[x86]`, `[arm64]`) and WSL. Compare them to know whether the game is native here. It warns when the exes are
+Windows builds and the host is neither Windows nor WSL.
 
 The report ends with ranked modding routes and the playbook to read next
 (skills/mod-any-game/references/engines/*.md). Everything here is read-only.
@@ -854,8 +855,12 @@ def scan(query: str) -> dict:
     if key not in ("native", "bannerlord"):
         routes.append(dict(route=ENGINES["native"][2], playbook="native.md", why="fallback when no loader reaches what you need"))
     warnings = []
+    host = host_info()
     if len(ix.files) < 5:
         warnings.append("the install folder is (nearly) empty: the game is not fully installed, or lives elsewhere")
+    if facts.get("executables") and host["os"] != "windows" and not host["wsl"]:
+        warnings.append(f"the exes are Windows (PE) builds but this host is {host_line(host)}: not native, so it needs a compatibility "
+                        "layer (unless the folder also holds a build for this OS); read skills/game-recon/references/compatibility.md")
     if anti:
         warnings.append(f"anti-cheat present ({', '.join(anti)}): offline/single-player only, never inject into online play; "
                         "many titles need the anti-cheat disabled via an official offline launch option - do not bypass it")
@@ -871,7 +876,7 @@ def scan(query: str) -> dict:
         workshop=game.get("workshop"), saves=save_hints(name, det),
         executables=facts.get("executables", {}), routes=routes, warnings=warnings,
         playbook=f"skills/mod-any-game/references/engines/{routes[0]['playbook']}",
-        files_indexed=len(ix.files), index_truncated=ix.truncated, host=host_info(),
+        files_indexed=len(ix.files), index_truncated=ix.truncated, host=host,
     )
     return report
 
